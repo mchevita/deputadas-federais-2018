@@ -1,0 +1,502 @@
+---
+title: "Por que houve mais deputadas federais em 2018?"
+author: "Marcus Vinicius Chevitarese Alves, Ângela Batista Oliveira"
+date: "25/11/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Carrega as bibliotecas necessárias
+
+```{r, message=FALSE, warning=FALSE}
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(gridExtra)
+library(ggpol)
+library(data.table)
+library(xltabr)
+```
+
+## Carrega arquivos de frequência de eleitos e eleitas em 2014 e 2018.
+
+```{r, message=FALSE, warning=FALSE}
+arq_freq_2014 <- "dados/freq_eleitos_uf_2014.csv"
+arq_freq_2018 <- "dados/freq_eleitos_uf_2018.csv"
+
+data_freq_2014_origem <- read.csv(arq_freq_2014, sep=";")
+head(data_freq_2014_origem, 10)
+
+data_freq_2018_origem <- read.csv(arq_freq_2018, sep=";")
+head(data_freq_2018_origem, 10)
+
+```
+
+## a.	Estrutura dos dados e análise exploratória dos candidatos eleitos a deputado federal em 2014 e 2018
+
+### a.1. Estrutura dos dados 2014
+
+```{r}
+str(data_freq_2014_origem)
+summary(data_freq_2014_origem)
+```
+
+### a.2. Estrutura dos dados 2018
+
+```{r}
+str(data_freq_2018_origem)
+summary(data_freq_2018_origem)
+```
+
+### a.3. Total e proporção de eleitos por UF em 2014
+
+```{r}
+data_freq_2014 <- ddply(data_freq_2014_origem,
+                        .(uf), 
+                        transform, 
+                        prop=n_eleitos/sum(n_eleitos))
+names(data_freq_2014)[4] <- "prop_eleitos"
+data_freq_2014
+```
+
+### a.4. Total e proporção de eleitos por UF em 2018
+
+```{r}
+data_freq_2018 <- ddply(data_freq_2018_origem,.(uf), transform, prop=n_eleitos/sum(n_eleitos))
+names(data_freq_2018)[4] <- "prop_eleitos"
+data_freq_2018
+```
+
+### a.5. Desenha histograma da proporção de deputados federais eleitos por UF e sexo, em 2014
+
+```{r}
+n_fig <- 1
+ggplot(data_freq_2014, aes(x = prop_eleitos)) +
+  geom_histogram(aes(color = sexo), fill = "white",
+    position = "identity", bins = 40) +
+  scale_color_manual(values = c("#00AFBB", "#E7B800")) +
+  ggtitle(paste(n_fig, " - Proporção de deputados federais eleitos por UF e sexo, em 2014"))
+```
+
+### a.6. Desenha histograma da proporção de deputados federais eleitos por UF e sexo, em 2018
+
+```{r}
+n_fig <- n_fig + 1
+ggplot(data_freq_2018, aes(x = prop_eleitos)) +
+  geom_histogram(aes(color = sexo), fill = "white",
+    position = "identity", bins = 40) +
+  scale_color_manual(values = c("#00AFBB", "#E7B800")) +
+  ggtitle(paste(n_fig, " - Proporção de deputados federais eleitos por UF e sexo, em 2018"))
+```
+
+### a.7. Interpretação dos histogramas de proporção de eleitos
+
+Analisando os dois histogramas, percebemos que a distribuição da proporção de eleitos em 2018 ficou um pouco mais equitativa em relação ao 2014. No primeiro histograma, há uma divisão clara entre homens e mulheres, sendo que, em nenhuma unidade da federação os homens obtiveram menos de 50% das cadeiras. Já em 2018, houve dois casos onde isso ocorreu.
+
+### a.8. Quantitativo e proporção de eleitos para deputado federal por sexo, em 2014
+
+```{r}
+tab_eleitos_uf_sexo_2014 <- xtabs(n_eleitos ~ uf + sexo, data_freq_2014)
+tab_prop_eleitos_uf_sexo_2014 <- prop.table(tab_eleitos_uf_sexo_2014, c(1))
+tab_prop_eleitos_uf_sexo_2014 <- addmargins(tab_prop_eleitos_uf_sexo_2014, c(2))
+
+tab_eleitos_uf_sexo_2014 <- addmargins(tab_eleitos_uf_sexo_2014)
+cat("Quantitativo de eleitos - 2014", "\n")
+tab_eleitos_uf_sexo_2014
+
+cat("\n", "Proporção de eleitos - 2014", "\n")
+tab_prop_eleitos_uf_sexo_2014
+```
+
+```{r}
+
+# cross_tab <- reshape2::dcast(data_freq_2014, uf ~ sexo, value.var = "n_eleitos", 
+#                                             margins=c("uf", "sexo"), fun.aggregate = sum)
+# 
+# 
+# titulos = c("Proporção de eleitos em 2014", "Cruzamento por UF e sexo do candidato")
+# tab_eleitos_uf_sexo_2014 <- xltabr::auto_crosstab_to_wb(cross_tab, titles = titulos)
+# openxlsx::openXL(tab_eleitos_uf_sexo_2014)
+# 
+# cross_tab <- reshape2::dcast(data_freq_2018, uf ~ sexo, value.var = "n_eleitos", 
+#                                             margins=c("uf", "sexo"), fun.aggregate = sum)
+# 
+# 
+# titulos = c("Proporção de eleitos em 2018", "Cruzamento por UF e sexo do candidato")
+# tab_eleitos_uf_sexo_2018 <- xltabr::auto_crosstab_to_wb(cross_tab, titles = titulos)
+# openxlsx::openXL(tab_eleitos_uf_sexo_2018)
+```
+
+### a.9. Quantitativo e proporção de eleitos para deputado federal por sexo, em 2018
+
+```{r}
+tab_eleitos_uf_sexo_2018 <- xtabs(n_eleitos ~ uf + sexo, data_freq_2018)
+tab_prop_eleitos_uf_sexo_2018 <- prop.table(tab_eleitos_uf_sexo_2018, c(1))
+tab_prop_eleitos_uf_sexo_2018 <- addmargins(tab_prop_eleitos_uf_sexo_2018, c(2))
+
+tab_eleitos_uf_sexo_2018 <- addmargins(tab_eleitos_uf_sexo_2018)
+cat("Quantitativo de eleitos - 2018", "\n")
+tab_eleitos_uf_sexo_2018
+
+cat("\n", "Proporção de eleitos - 2018", "\n")
+tab_prop_eleitos_uf_sexo_2018
+```
+
+### a.10. Gŕaficos de proporção de eleitos para deputado federal por sexo, em 2014 e 2018
+
+```{r}
+require(gridExtra)
+
+cd2014 <- data.frame(
+  sexo = factor(c("Mulheres", "Homens"),
+                   levels = c("Mulheres", "Homens")),
+  seats   = c(51, 462),
+  colors  = c("red", "blue"),
+  stringsAsFactors = FALSE)
+
+n_fig <- n_fig + 1
+
+plot2014 <- ggplot(cd2014) + 
+  geom_arcbar(aes(shares = seats, r0 = 5, r1 = 10, fill = sexo)) + 
+  scale_fill_manual(values = cd2014$colors) +
+  coord_fixed() +
+  theme_void() +
+  ggtitle(paste(n_fig, ".a", " - Proporção de cadeiras conquistadas\npor sexo, em 2014"))
+
+cd2018 <- data.frame(
+  sexo = factor(c("Mulheres", "Homens"),
+                   levels = c("Mulheres", "Homens")),
+  seats   = c(77, 436),
+  colors  = c("red", "blue"),
+  stringsAsFactors = FALSE)
+
+plot2018 <- ggplot(cd2018) + 
+  geom_arcbar(aes(shares = seats, r0 = 5, r1 = 10, fill = sexo)) + 
+  scale_fill_manual(values = cd2018$colors) +
+  coord_fixed() +
+  theme_void() +
+  ggtitle(paste(n_fig, ".b", " - Proporção de cadeiras conquistadas\npor sexo, em 2018"))
+
+grid.arrange(plot2014, plot2018, ncol=2)
+```
+
+### a.11. Compara a proporção de eleitas em cada UF em 2014 e 2018
+
+```{r}
+tab <- tab_prop_eleitos_uf_sexo_2018[, 1] >= tab_prop_eleitos_uf_sexo_2014[, 1]
+comp_2014_2018 <- as.data.frame(tab)
+comp_2014_2018
+n_maiores_em_2018 <- sum(comp_2014_2018$tab == TRUE)
+cat("Estados onde a proporção de eleitas foi maior ou igual em 2018:", n_maiores_em_2018)
+```
+
+### a.12. Variância na proporção de eleitas em 2014 e 2018
+
+```{r}
+var_2014 <- var(data_freq_2014 %>% dplyr::filter(sexo=="f") %>% select("prop_eleitos"))
+cat("Variância - 2014: ", var_2014, "\n")
+
+var_2018 <- var(data_freq_2018 %>% dplyr::filter(sexo=="f") %>% select("prop_eleitos"))
+cat("Variância - 2018: ", var_2018, "\n")
+```
+
+## b. Discussão sobre resultados da análise exploratória da proporção de eleitos
+
+Em 2014, apenas 51 mulheres candidatas ao cargo de deputado federal foram eleitas, o que corresponde a 9,95% das 513 vagas em disputa. Já em 2018, esse número aumentou para 77 eleitas, ou 15,01% das cadeiras. Isso significa que, proporcionalmente, as mulheres coneguiram 50,85% a mais de cadeiras na Câmara dos Deputado em 2018, na comparação com 2014.
+
+Examinando os outros dados apresentados, o que parece ter ocorrido é que, em 2014, a proporção de candidatas ao cargo de deputado federal eleitas foi "nivelada por baixo" em todas as unidades da federação. Por exemplo, a proporção de eleitas mais alta obtida foi 37,5% (nos estados do Amapá e do Tocantins). Isso, provavelmente, implicou numa baixa variância nessa proporção.
+
+Já em 2018, em geral, a proporção de candidatas a deputado federal eleitas é em 2018 é maior ou igual que em 2014. Isso ocorreu em 21 dos 26 estados e também no Distrito Federal. A proporção de eleitas mais alta passou para 62,5% (no Distrito Federal), além de ter alcançado 50% no estado do Acre. Isso, provavelmente, implicou num aumento da variância nessa proporção, na comparação com 2014 (a variância de 2018 foi mais do dobro da equivalente em 2014).
+
+O que explica esse aumento? Acreditamos ser o estabelecimento de "cotas" de receitas de origem pública. Isso ocorreu em 2018, antes das eleições. Veja explicação de Backes et al. (2018):
+
+"Em resposta à consulta formulada por deputadas federais e senadoras, o TSE decidiu, em 21/5/2018, que os partidos deveriam destinar 30% dos recursos do Fundo Especial de Financiamento de Campanhas
+para as candidaturas das mulheres, de maneira global, sem especificar precisamente o percentual para
+cada cargo (Presidente, Governador, Senador, Deputado Federal e Estadual). Essa decisão vai ao
+encontro do julgamento da ADI 5617, pelo STF, que estabeleceu que 30% dos recursos do Fundo
+Partidário devem se destinar à candidatura de mulheres."
+
+Portanto, as mulheres tiveram, em tese, um acesso a uma fatia maior de recursos públicos, o que provavelmente ampliou a proporção total de recursos em comparação aos homens nas Eleições Gerais de 2018. Uma vez que a literatura indica haver uma correlação positiva entre receita de campanha e votação, isso explicaria uma proporção de votos maior e, consequentemente, uma proporção maior de mulheres eleitas, na comparação com 2014, quando a referida cota ainda não havia sido estabelecida.
+
+## c. Hipóteses iniciais do trabalho
+
+Em vista do que foi discutido, formulamos duas hipóteses:
+(H1) Houve aumento estatisticamente significativo na proporção de receitas das candidatas ao cargo de deputado federal em 2018, na comparação com 2014.
+(H2) Houve aumento estatisticamente significativo na proporção de votos nas candidatas ao cargo de deputado federal em 2018, na comparação com 2014.
+
+## d. Análise exploratória dos candidatos
+
+### d.1. Carrega e prepara dados de receitas e votação dos candidatos
+
+Nota: os dados foram obtidos no Sistema de Estatísticas Eleitorais - Siele, da Câmara dos Deputados.
+```{r}
+# Carrega arquivos de votação e receitas de candidatos e candidatas em 2010
+# Esses arquivos tinham estrutura um pouco diferentes e, por isso, foram carregados à parte
+arq_candidatos_2010 <- "dados/candidatos_2010.csv"
+dados_candidatos_2010_orig <- read.csv(arq_candidatos_2010, sep=";")
+dados_candidatos_2010_orig$num_titulo_eleitoral <- as.character(dados_candidatos_2010_orig$num_titulo_eleitoral)
+head(dados_candidatos_2010_orig, 10)
+
+arq_candidatos_2010_sexo <- "dados/candidatos_2010_sexo.csv"
+dados_candidatos_2010_sexo <- read.csv(arq_candidatos_2010_sexo, sep=";")
+dados_candidatos_2010_sexo$num_titulo_eleitoral <- as.character(dados_candidatos_2010_sexo$num_titulo_eleitoral)
+head(dados_candidatos_2010_sexo, 10)
+
+arq_candidatos_2010 <- merge(x=dados_candidatos_2010_orig, 
+                            y=dados_candidatos_2010_sexo, 
+                            by="num_titulo_eleitoral",
+                            all=TRUE)
+
+arq_candidatos_2010
+
+```
+
+```{r}
+# Carrega arquivos de votação e receitas de candidatos e candidatas em 2014 e 2018.
+arq_rec_vot_2014_2018 <- "dados/receitas_e_votacao_2014_e_2018.csv"
+
+dados_rec_vot_2014_2018_orig <- read.csv(arq_rec_vot_2014_2018, sep=";")
+head(dados_rec_vot_2014_2018_orig, 10)
+
+# Substituindo separador de decimais "," por "."
+dados_rec_vot_2014_2018_orig$valor_receita_publica <- gsub(',', '.', dados_rec_vot_2014_2018_orig$valor_receita_publica)
+dados_rec_vot_2014_2018_orig$valor_receita_publica <- as.numeric(dados_rec_vot_2014_2018_orig$valor_receita_publica)
+
+dados_rec_vot_2014_2018_orig$valor_receita_total <- gsub(',', '.', dados_rec_vot_2014_2018_orig$valor_receita_total)
+dados_rec_vot_2014_2018_orig$valor_receita_total <- as.numeric(dados_rec_vot_2014_2018_orig$valor_receita_total)
+
+dados_rec_vot_2014_2018_orig$igpm_2014_2018 <- gsub(',', '.', dados_rec_vot_2014_2018_orig$igpm_2014_2018)
+dados_rec_vot_2014_2018_orig$igpm_2014_2018 <- as.numeric(dados_rec_vot_2014_2018_orig$igpm_2014_2018)
+
+# Substituindo "NA" por 0
+dados_rec_vot_2014_2018_orig <- dados_rec_vot_2014_2018_orig %>%
+  mutate(valor_receita_publica = coalesce(valor_receita_publica, 0))
+
+# Substituindo "FEMININO" e "MASCULINO" por "m" e "f"
+dados_rec_vot_2014_2018_orig <- dados_rec_vot_2014_2018_orig %>%
+  mutate(sexo = ifelse(sexo == "FEMININO", "f", "m"))
+
+# Criando nova coluna, para identificar diretamente se o candidato foi eleito
+dados_rec_vot_2014_2018_orig <- dados_rec_vot_2014_2018_orig %>%
+  mutate(eleito = ifelse(situacao_eleitoral=="ELEITO POR MÉDIA" | situacao_eleitoral=="ELEITO POR QP", 1, 0))
+
+head(dados_rec_vot_2014_2018_orig, 10)
+
+```
+
+### d.2. Diferença na proporção de receitas das candidatas a deputado federal, em 2014 e 2018
+
+```{r}
+dados_prop_rec <- 
+  ddply(dados_rec_vot_2014_2018_orig,
+        .(ano_eleicao, uf), 
+        transform, 
+        prop=valor_receita_total/sum(valor_receita_total)) %>%
+  select('ano_eleicao', 'uf', 'sexo', 'prop') %>%
+  filter(sexo == 'f' & (ano_eleicao == '2014' | ano_eleicao == '2018'))
+names(dados_prop_rec)[4] <- "prop_rec"
+
+n_fig <- n_fig + 1
+ggplot(data=dados_prop_rec, aes(x=ano_eleicao, y=prop_rec, fill=factor(ano_eleicao))) +
+    geom_boxplot() +
+    scale_y_log10() +
+    ylab("Proporção de receitas na UF")+
+    labs(fill="Eleição")+
+    ggtitle(paste(n_fig, " - Proporção de receitas das candidatas a deputado federal, em 2014 e 2018"))
+```
+
+### d.3. Diferença na proporção de receitas das candidatas a deputado federal, em 2014 e 2018 (detalhe por UF)
+
+```{r }
+dados_prop_rec <- 
+  ddply(dados_rec_vot_2014_2018_orig,
+        .(ano_eleicao, uf), 
+        transform, 
+        prop=valor_receita_total/sum(valor_receita_total)) %>%
+  select('ano_eleicao', 'uf', 'sexo', 'prop') %>%
+  filter(sexo == 'f' & (ano_eleicao == '2014' | ano_eleicao == '2018'))
+names(dados_prop_rec)[4] <- "prop_rec"
+
+n_fig <- n_fig + 1
+
+ggplot(data=dados_prop_rec, aes(x=sexo, y=prop_rec, fill=factor(ano_eleicao))) +
+    geom_boxplot() +
+    facet_wrap(~uf) +
+    scale_y_log10() +
+    xlab("UF") +
+    ylab("Proporção de eleitos na UF")+
+    labs(fill="Eleição")+
+    ggtitle(paste(n_fig, " - Proporção de receitas das candidatas a deputado federal, em 2014 e 2018"))
+```
+
+### d.4. Dependência de recursos públicos
+
+```{r}
+dados_rec_pub_2018 <- dados_rec_vot_2014_2018_orig %>% 
+  filter(ano_eleicao == '2018') %>%
+  select('uf', 'sexo', 'valor_receita_publica', 'valor_receita_total')
+
+lista_receitas_2018  <- reshape2::melt(dados_rec_pub_2018, value.name = "receita", id=c("uf", "sexo"))
+
+n_fig <- n_fig + 1
+
+ggplot(lista_receitas_2018, aes(fill=variable, y=receita, x=uf)) +
+  geom_bar(stat="identity", width = 0.8, position = "fill") +
+  facet_wrap(~sexo) +
+  theme(legend.position="bottom", axis.text.y = element_text(size = 7)) +
+  guides(fill=guide_legend(title = NULL)) +
+  geom_hline(yintercept = 0.50, color = "blue") +
+  coord_flip() +
+  ggtitle(paste(n_fig, " - Proporção de receitas públicas de mulheres e homens\n nas eleições para deputado federal, em 2018"))
+
+```
+
+
+### d.5. Diferença na proporção de votos nas candidatas a deputado federal, em 2014 e 2018
+
+```{r}
+dados_prop_vot <- 
+  ddply(dados_rec_vot_2014_2018_orig,
+        .(ano_eleicao, uf), 
+        transform, 
+        prop=n_votos/sum(n_votos)) %>%
+  select('ano_eleicao', 'uf', 'sexo', 'prop') %>%
+  filter(sexo == 'f' & (ano_eleicao == '2014' | ano_eleicao == '2018'))
+names(dados_prop_vot)[4] <- "prop_votos"
+
+n_fig <- n_fig + 1
+
+ggplot(data=dados_prop_vot, aes(x=ano_eleicao, y=prop_votos, fill=factor(ano_eleicao))) +
+    geom_boxplot() +
+    scale_y_log10() +
+    ylab("Proporção de votos na UF")+
+    labs(fill="Eleição")+
+    ggtitle(paste(n_fig, " - Proporção de votos em candidatas a deputado federal,\n em 2014 e 2018"))
+```
+
+### d.6. Diferença na proporção de votos nas candidatas a deputado federal, em 2014 e 2018 (detalhe por UF) 
+
+```{r}
+dados_prop_vot <- 
+  ddply(dados_rec_vot_2014_2018_orig,
+        .(ano_eleicao, uf), 
+        transform, 
+        prop=n_votos/sum(n_votos)) %>%
+  select('ano_eleicao', 'uf', 'sexo', 'prop') %>%
+  filter(sexo == 'f' & (ano_eleicao == '2014' | ano_eleicao == '2018'))
+names(dados_prop_vot)[4] <- "prop_votos"
+
+n_fig <- n_fig + 1
+
+ggplot(data=dados_prop_vot, aes(x=sexo, y=prop_votos, fill=factor(ano_eleicao))) +
+    geom_boxplot() +
+    facet_wrap(~uf) +
+    scale_y_log10() +
+    xlab("UF") +
+    ylab("Proporção de eleitos na UF") +
+    labs(fill="Eleição") +
+    ggtitle(paste(n_fig, "- Proporção de votos em candidatas a deputado federal, em 2014 e 2018"))
+```
+
+### d.7. Discussão sobre os resultados da análise exploratória dos candidatos
+
+Em geral, tanto a mediana da proporção de receitas quanto a mediana da proporção de votos foram superiores em 2018 na comparação com 2014, no universo analisado (candidatas ao cargo de deputado federal, com candidaturas consideradas aptas pelo TSE e receita superior a zero).
+
+Tais dados, portanto, corroboram as hipóteses aventadas.
+
+## e. Análise confirmatória
+
+### e.1. Teste de normalidade da proporção de receitas
+
+```{r}
+dados_rec <-
+  dados_rec_vot_2014_2018_orig %>% 
+  select('ano_eleicao', 'uf', 'sexo', 'valor_receita_total')
+head(dados_rec, 10)
+
+dados_rec_f <- 
+  ddply(dados_rec,.(ano_eleicao, uf), transform, prop=valor_receita_total/sum(valor_receita_total)) %>%
+  filter(sexo=='f') %>% 
+  select('ano_eleicao', 'uf', 'prop')
+head(dados_rec_f, 10)
+
+shapiro.test(dados_rec_f$prop)
+```
+
+### e.2. Teste de normalidade da proporção de votos
+
+```{r}
+dados_vot <-
+  dados_rec_vot_2014_2018_orig %>% 
+  select('ano_eleicao', 'uf', 'sexo', 'n_votos')
+head(dados_vot, 10)
+
+dados_vot_f <- 
+  ddply(dados_vot,
+        .(ano_eleicao, uf), 
+        transform, 
+        prop=n_votos/sum(n_votos)) %>%
+  filter(sexo=='f') %>% 
+  select('ano_eleicao', 'uf', 'prop')
+head(dados_vot_f, 10)
+
+shapiro.test(dados_vot_f$prop)
+```
+
+
+### e.3. Teste de Kruskall-Wallis para comparar a proporção de receitas das candidatas ao cargo de deputado federal em 2014 e 2018 (H1)
+
+#### Justiticativa do uso do Kruskall-Wallis
+
+Como foi visto nas seções anteriores, o teste de normalidade de Shapiro-Walk rejeitou a hipótese nula de que as distribuições não fossem significativamente diferentes da normal; ou seja, elas são diferentes da normal. Portanto, precisamos de um método não-paramétrico.
+
+Segundo o Handbook of Biological Statistics*, "o uso mais comum do teste de Kruskall-Wallis é quando se tem uma variável nominal e uma variável de medida, um experimento no qual normalmente a Anova seria utilizada, mas a variável de medida não atende a assunção de normalidade.
+
+Fonte: http://www.biostathandbook.com/kruskalwallis.html
+
+#### Nota
+
+Nessa análise e na posterior foram computados somente dados de candidatos considerados aptos pelo TSE e com receita maior do que zero.
+
+```{r analise_confirmatoria_receitas}
+tab_prop_rec_f <- xtabs(prop ~ uf + ano_eleicao, data=dados_rec_f)
+tab_prop_rec_f
+
+kruskal.test(prop ~ ano_eleicao, data=dados_rec_f)
+
+```
+
+### e.4. Interpretação do teste de Kruskal-Wallis relativo à proporção de receitas das mulheres
+
+Como o p-valor é inferior ao nível de significância de 0,05, podemos concluir que há diferenças significativas entre os grupos, ou seja, entre as eleições de 2014 e 2018, no que tange à proporção de receitas das candidatas ao cargo de deputado federal dentro do respectivo distrito eleitoral (UF).
+
+### e.5. Teste de Kruskall-Wallis para comparar a proporção de votos das candidatas ao cargo de deputado federal em 2014 e 2018 (H2)
+
+```{r}
+tab_prop_vot_f <- xtabs(prop ~ uf + ano_eleicao, data=dados_vot_f)
+tab_prop_vot_f
+
+kruskal.test(prop ~ ano_eleicao, data=dados_vot_f)
+```
+
+### e.6. Interpretação do teste de Kuskal-Wallis relativo à proporção de votos das mulheres
+
+Como o p-valor é inferior ao nível de significância de 0,05, podemos concluir que há diferenças significativas entre os grupos, ou seja, entre as eleições de 2014 e 2018, no que tange à proporção de votos das candidatas ao cargo de deputado federal dentro do respectivo distrito eleitoral (UF).
+
+Tem-se então que, ao se comparar 2014 e 2018, houve variação significativa tanto na proporção de receitas quanto na proporção de votos nas mulheres candidatas ao cargo de deputado federal.
+
+## f. Considerações finais
+
+As hipóteses aventadas receberam suporte das evidências mostradas. O estabelecimento legal das cotas de receitas públicas para as candidatas do sexo feminino aumentou a proporção relativa de receitas por gênero em cada UF, na comparação entre 2014 e 2018. Esse aumento foi estatisticamente significativo (H1).
+
+Além disso, foi identificado também, em relação ao mesmo universo, um aumento na proporção relativa de votos por gênero em cada UF, na comparação entre 2014 e 2018. Esse aumento também foi estatisticamente significativo (H2).
+
+Apesar de esse estudo, isoladamente, não estabelecer a causalidade, parece-nos que há uma influência positiva e significativa nas referidas cotas no aumento de mulheres eleitas para deputado federal. Essa influência se dá de forma indireta: ela provoca um aumento na proporção de receitas, o que, por sua vez, aumenta a proporção de votos -- relação bem conhecida da literatura de Financiamento de Campanha. Naturalmente, o aumento na proporção de votos favorece a ampliação na proporção de eleitas em cada unidade da federação.
+
+## ENTREGA EM 27/11/2019, ÀS 23h59.
+
+
