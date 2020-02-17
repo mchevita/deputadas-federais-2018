@@ -6,10 +6,7 @@ Marcus Vinicius Chevitarese Alves, Ângela Batista Oliveira
 ## Carrega as bibliotecas necessárias
 
 ``` r
-library(plyr)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
+library(tidyverse)
 library(gridExtra)
 library(ggpol)
 library(data.table)
@@ -108,133 +105,54 @@ summary(data_freq_2018_origem)
 ### a.3. Total e proporção de eleitos por UF em 2014
 
 ``` r
-data_freq_2014 <- ddply(data_freq_2014_origem,
-                        .(uf), 
-                        transform, 
-                        prop=n_eleitos/sum(n_eleitos))
-names(data_freq_2014)[4] <- "prop_eleitos"
+data_freq_2014 <- data_freq_2014_origem %>%
+  group_by(uf) %>%
+  mutate(prop_eleitos = n_eleitos / sum(n_eleitos)) %>%
+  ungroup()
+
 data_freq_2014
 ```
 
-    ##    uf sexo n_eleitos prop_eleitos
-    ## 1  AC    f         1   0.12500000
-    ## 2  AC    m         7   0.87500000
-    ## 3  AL    f         0   0.00000000
-    ## 4  AL    m         9   1.00000000
-    ## 5  AM    f         1   0.12500000
-    ## 6  AM    m         7   0.87500000
-    ## 7  AP    f         3   0.37500000
-    ## 8  AP    m         5   0.62500000
-    ## 9  BA    f         3   0.07692308
-    ## 10 BA    m        36   0.92307692
-    ## 11 CE    f         2   0.09090909
-    ## 12 CE    m        20   0.90909091
-    ## 13 DF    f         1   0.12500000
-    ## 14 DF    m         7   0.87500000
-    ## 15 ES    f         0   0.00000000
-    ## 16 ES    m        10   1.00000000
-    ## 17 GO    f         2   0.11764706
-    ## 18 GO    m        15   0.88235294
-    ## 19 MA    f         1   0.05555556
-    ## 20 MA    m        17   0.94444444
-    ## 21 MG    f         5   0.09433962
-    ## 22 MG    m        48   0.90566038
-    ## 23 MS    f         1   0.12500000
-    ## 24 MS    m         7   0.87500000
-    ## 25 MT    f         0   0.00000000
-    ## 26 MT    m         8   1.00000000
-    ## 27 PA    f         3   0.17647059
-    ## 28 PA    m        14   0.82352941
-    ## 29 PB    f         0   0.00000000
-    ## 30 PB    m        12   1.00000000
-    ## 31 PE    f         1   0.04000000
-    ## 32 PE    m        24   0.96000000
-    ## 33 PI    f         2   0.20000000
-    ## 34 PI    m         8   0.80000000
-    ## 35 PR    f         2   0.06666667
-    ## 36 PR    m        28   0.93333333
-    ## 37 RJ    f         6   0.13043478
-    ## 38 RJ    m        40   0.86956522
-    ## 39 RN    f         1   0.12500000
-    ## 40 RN    m         7   0.87500000
-    ## 41 RO    f         2   0.25000000
-    ## 42 RO    m         6   0.75000000
-    ## 43 RR    f         2   0.25000000
-    ## 44 RR    m         6   0.75000000
-    ## 45 RS    f         1   0.03225806
-    ## 46 RS    m        30   0.96774194
-    ## 47 SC    f         2   0.12500000
-    ## 48 SC    m        14   0.87500000
-    ## 49 SE    f         0   0.00000000
-    ## 50 SE    m         8   1.00000000
-    ## 51 SP    f         6   0.08571429
-    ## 52 SP    m        64   0.91428571
-    ## 53 TO    f         3   0.37500000
-    ## 54 TO    m         5   0.62500000
+    ## # A tibble: 54 x 4
+    ##    uf    sexo  n_eleitos prop_eleitos
+    ##    <fct> <fct>     <int>        <dbl>
+    ##  1 AC    f             1       0.125 
+    ##  2 AL    f             0       0     
+    ##  3 AM    f             1       0.125 
+    ##  4 AP    f             3       0.375 
+    ##  5 BA    f             3       0.0769
+    ##  6 CE    f             2       0.0909
+    ##  7 DF    f             1       0.125 
+    ##  8 ES    f             0       0     
+    ##  9 GO    f             2       0.118 
+    ## 10 MA    f             1       0.0556
+    ## # ... with 44 more rows
 
 ### a.4. Total e proporção de eleitos por UF em 2018
 
 ``` r
-data_freq_2018 <- ddply(data_freq_2018_origem,.(uf), transform, prop=n_eleitos/sum(n_eleitos))
-names(data_freq_2018)[4] <- "prop_eleitos"
+data_freq_2018 <- data_freq_2018_origem %>%
+  group_by(uf) %>%
+  mutate(prop_eleitos = n_eleitos / sum(n_eleitos)) %>%
+  ungroup()
+
 data_freq_2018
 ```
 
-    ##    uf sexo n_eleitos prop_eleitos
-    ## 1  AC    f         4   0.50000000
-    ## 2  AC    m         4   0.50000000
-    ## 3  AL    f         1   0.11111111
-    ## 4  AL    m         8   0.88888889
-    ## 5  AM    f         0   0.00000000
-    ## 6  AM    m         8   1.00000000
-    ## 7  AP    f         3   0.37500000
-    ## 8  AP    m         5   0.62500000
-    ## 9  BA    f         3   0.07692308
-    ## 10 BA    m        36   0.92307692
-    ## 11 CE    f         1   0.04545455
-    ## 12 CE    m        21   0.95454545
-    ## 13 DF    f         5   0.62500000
-    ## 14 DF    m         3   0.37500000
-    ## 15 ES    f         3   0.30000000
-    ## 16 ES    m         7   0.70000000
-    ## 17 GO    f         2   0.11764706
-    ## 18 GO    m        15   0.88235294
-    ## 19 MA    f         0   0.00000000
-    ## 20 MA    m        18   1.00000000
-    ## 21 MG    f         4   0.07547170
-    ## 22 MG    m        49   0.92452830
-    ## 23 MS    f         2   0.25000000
-    ## 24 MS    m         6   0.75000000
-    ## 25 MT    f         1   0.12500000
-    ## 26 MT    m         7   0.87500000
-    ## 27 PA    f         1   0.05882353
-    ## 28 PA    m        16   0.94117647
-    ## 29 PB    f         1   0.08333333
-    ## 30 PB    m        11   0.91666667
-    ## 31 PE    f         1   0.04000000
-    ## 32 PE    m        24   0.96000000
-    ## 33 PI    f         4   0.40000000
-    ## 34 PI    m         6   0.60000000
-    ## 35 PR    f         5   0.16666667
-    ## 36 PR    m        25   0.83333333
-    ## 37 RJ    f        10   0.21739130
-    ## 38 RJ    m        36   0.78260870
-    ## 39 RN    f         1   0.12500000
-    ## 40 RN    m         7   0.87500000
-    ## 41 RO    f         3   0.37500000
-    ## 42 RO    m         5   0.62500000
-    ## 43 RR    f         2   0.25000000
-    ## 44 RR    m         6   0.75000000
-    ## 45 RS    f         3   0.09677419
-    ## 46 RS    m        28   0.90322581
-    ## 47 SC    f         4   0.25000000
-    ## 48 SC    m        12   0.75000000
-    ## 49 SE    f         0   0.00000000
-    ## 50 SE    m         8   1.00000000
-    ## 51 SP    f        11   0.15714286
-    ## 52 SP    m        59   0.84285714
-    ## 53 TO    f         2   0.25000000
-    ## 54 TO    m         6   0.75000000
+    ## # A tibble: 54 x 4
+    ##    uf    sexo  n_eleitos prop_eleitos
+    ##    <fct> <fct>     <int>        <dbl>
+    ##  1 AC    f             4       0.5   
+    ##  2 AL    f             1       0.111 
+    ##  3 AM    f             0       0     
+    ##  4 AP    f             3       0.375 
+    ##  5 BA    f             3       0.0769
+    ##  6 CE    f             1       0.0455
+    ##  7 DF    f             5       0.625 
+    ##  8 ES    f             3       0.3   
+    ##  9 GO    f             2       0.118 
+    ## 10 MA    f             0       0     
+    ## # ... with 44 more rows
 
 ### a.5. Desenha histograma da proporção de deputados federais eleitos por UF e sexo, em 2014
 
@@ -647,28 +565,17 @@ head(dados_candidatos_2010_orig, 10)
     ## 8         2010 AC DEPUTADO FEDERAL     EDSON DE PAULA           6239612070
     ## 9         2010 AC DEPUTADO FEDERAL      FERNANDO MELO            933682461
     ## 10        2010 AC DEPUTADO FEDERAL      FLAVIANO MELO            745162429
-    ##    sigla_partido
-    ## 1            PSC
-    ## 2           PSDB
-    ## 3           PSDB
-    ## 4            PRB
-    ## 5           PSDB
-    ## 6           PMDB
-    ## 7           PSDB
-    ## 8           PSDB
-    ## 9             PT
-    ## 10          PMDB
-    ##                                                       ocupacao
-    ## 1                                                  EMPRESÃ\201RIO
-    ## 2                                      REPRESENTANTE COMERCIAL
-    ## 3                                   PROFESSOR DE ENSINO MÃ‰DIO
-    ## 4                                                       OUTROS
-    ## 5                                                       OUTROS
-    ## 6                                                       OUTROS
-    ## 7                                                      MÃ‰DICO
-    ## 8  OPERADOR DE EQUIPAMENTO DE RÃ\201DIO, TELEVISÃƒO, SOM E CINEMA
-    ## 9                                             DEPUTADO FEDERAL
-    ## 10                                            DEPUTADO FEDERAL
+    ##    sigla_partido                                                    ocupacao
+    ## 1            PSC                                                 EMPRESÃ\201RIO
+    ## 2           PSDB                                     REPRESENTANTE COMERCIAL
+    ## 3           PSDB                                  PROFESSOR DE ENSINO MÃ‰DIO
+    ## 4            PRB                                                      OUTROS
+    ## 5           PSDB                                                      OUTROS
+    ## 6           PMDB                                                      OUTROS
+    ## 7           PSDB                                                     MÃ‰DICO
+    ## 8           PSDB OPERADOR DE EQUIPAMENTO DE RÃ\201DIO, TELEVISÃƒO, SOM E CINEMA
+    ## 9             PT                                            DEPUTADO FEDERAL
+    ## 10          PMDB                                            DEPUTADO FEDERAL
     ##    capital_politico_proprio n_votos valor_receita_total sit_eleitoral_cod
     ## 1                         0   15849              430283                 1
     ## 2                         0    1082                3168                 0
@@ -709,90 +616,90 @@ arq_candidatos_2010 <- merge(x=dados_candidatos_2010_orig,
 head(arq_candidatos_2010, 20)
 ```
 
-    ##    num_titulo_eleitoral ano_eleicao.x uf.x          cargo.x
-    ## 1          100124300159            NA <NA>             <NA>
-    ## 2          100128400388            NA <NA>             <NA>
-    ## 3            1001852402          2010   AC DEPUTADO FEDERAL
-    ## 4           10028570396          2010   RJ DEPUTADO FEDERAL
-    ## 5          100324470396          2010   RJ DEPUTADO FEDERAL
-    ## 6           10039070841            NA <NA>             <NA>
-    ## 7          100413440272            NA <NA>             <NA>
-    ## 8            1004701309          2010   PA DEPUTADO FEDERAL
-    ## 9          100581490183          2010   SP DEPUTADO FEDERAL
-    ## 10          10062390345          2010   RJ DEPUTADO FEDERAL
-    ## 11         100625630213          2010   MG DEPUTADO FEDERAL
-    ## 12         100632050108          2010   SP DEPUTADO FEDERAL
-    ## 13          10063501910          2010   MS DEPUTADO FEDERAL
-    ## 14          10080700388          2010   RJ DEPUTADO FEDERAL
-    ## 15           1008162615          2010   RR DEPUTADO FEDERAL
-    ## 16           1008171902          2010   MS DEPUTADO FEDERAL
-    ## 17          10097381449          2010   ES DEPUTADO FEDERAL
-    ## 18         100984500299          2010   MG DEPUTADO FEDERAL
-    ## 19         101028920302            NA <NA>             <NA>
-    ## 20          10106240230          2010   MG DEPUTADO FEDERAL
-    ##             nome_urna sigla_partido                              ocupacao
-    ## 1                <NA>          <NA>                                  <NA>
-    ## 2                <NA>          <NA>                                  <NA>
-    ## 3         SGTO VIEIRA           PPS                                OUTROS
-    ## 4              MATIAS           PMN                     MILITAR REFORMADO
-    ## 5   LEONARDO PICCIANI          PMDB                      DEPUTADO FEDERAL
-    ## 6                <NA>          <NA>                                  <NA>
-    ## 7                <NA>          <NA>                                  <NA>
-    ## 8      ADEMIR ANDRADE           PSB                              VEREADOR
-    ## 9      ANTONIO BUGALU           PSC                                OUTROS
-    ## 10        PEDRO ALAIM           PDT                           EMPRESÃ\201RIO
-    ## 11          ALEXANDRE           PRB                                OUTROS
-    ## 12      MARA GABRILLI          PSDB                              VEREADOR
-    ## 13        PROFÂª IARA            PT            SERVIDOR PÃšBLICO ESTADUAL
-    ## 14  VIRGINIA MONTEIRO          PMDB                                OUTROS
-    ## 15     BERINHO BANTIM          PSDB                              ADVOGADO
-    ## 16           PR DUTRA           PTN            SERVIDOR PÃšBLICO ESTADUAL
-    ## 17      NODIR COLOMBO       PC do B APOSENTADO (EXCETO SERVIDOR PÃšBLICO)
-    ## 18 PROFESSOR ROMANELY            PV                                OUTROS
-    ## 19               <NA>          <NA>                                  <NA>
-    ## 20            MARILDA            PT            PROFESSOR DE ENSINO MÃ‰DIO
-    ##    capital_politico_proprio n_votos valor_receita_total sit_eleitoral_cod
-    ## 1                        NA      NA                  NA                NA
-    ## 2                        NA      NA                  NA                NA
-    ## 3                         0    3378                4703                 0
-    ## 4                         0    2652               11750                 0
-    ## 5                         3  165630             1911679                 1
-    ## 6                        NA      NA                  NA                NA
-    ## 7                        NA      NA                  NA                NA
-    ## 8                         1   64984              455017                 0
-    ## 9                         0    2785               12016                 0
-    ## 10                        0    1225               31832                 0
-    ## 11                        0     196               23883                 0
-    ## 12                        1  160138             1214034                 1
-    ## 13                        0    5449               41418                 0
-    ## 14                        0    1047                 300                 0
-    ## 15                        0   10111              191430                 1
-    ## 16                        0     375               62300                 0
-    ## 17                        0    3647               17975                 0
-    ## 18                        0    5478               86396                 0
-    ## 19                       NA      NA                  NA                NA
-    ## 20                        0   26784              181858                 0
-    ##    ano_eleicao.y          cargo.y uf.y      sexo
-    ## 1           2010 DEPUTADO FEDERAL   SP MASCULINO
-    ## 2           2010 DEPUTADO FEDERAL   RJ  FEMININO
-    ## 3           2010 DEPUTADO FEDERAL   AC MASCULINO
-    ## 4           2010 DEPUTADO FEDERAL   RJ MASCULINO
-    ## 5           2010 DEPUTADO FEDERAL   RJ MASCULINO
-    ## 6           2010 DEPUTADO FEDERAL   PE MASCULINO
-    ## 7           2010 DEPUTADO FEDERAL   MG  FEMININO
-    ## 8           2010 DEPUTADO FEDERAL   PA MASCULINO
-    ## 9           2010 DEPUTADO FEDERAL   SP MASCULINO
-    ## 10          2010 DEPUTADO FEDERAL   RJ MASCULINO
-    ## 11          2010 DEPUTADO FEDERAL   MG MASCULINO
-    ## 12          2010 DEPUTADO FEDERAL   SP  FEMININO
-    ## 13          2010 DEPUTADO FEDERAL   MS  FEMININO
-    ## 14          2010 DEPUTADO FEDERAL   RJ  FEMININO
-    ## 15          2010 DEPUTADO FEDERAL   RR MASCULINO
-    ## 16          2010 DEPUTADO FEDERAL   MS MASCULINO
-    ## 17          2010 DEPUTADO FEDERAL   ES MASCULINO
-    ## 18          2010 DEPUTADO FEDERAL   MG MASCULINO
-    ## 19          2010 DEPUTADO FEDERAL   RJ  FEMININO
-    ## 20          2010 DEPUTADO FEDERAL   MG  FEMININO
+    ##    num_titulo_eleitoral ano_eleicao.x uf.x          cargo.x          nome_urna
+    ## 1          100124300159            NA <NA>             <NA>               <NA>
+    ## 2          100128400388            NA <NA>             <NA>               <NA>
+    ## 3            1001852402          2010   AC DEPUTADO FEDERAL        SGTO VIEIRA
+    ## 4           10028570396          2010   RJ DEPUTADO FEDERAL             MATIAS
+    ## 5          100324470396          2010   RJ DEPUTADO FEDERAL  LEONARDO PICCIANI
+    ## 6           10039070841            NA <NA>             <NA>               <NA>
+    ## 7          100413440272            NA <NA>             <NA>               <NA>
+    ## 8            1004701309          2010   PA DEPUTADO FEDERAL     ADEMIR ANDRADE
+    ## 9          100581490183          2010   SP DEPUTADO FEDERAL     ANTONIO BUGALU
+    ## 10          10062390345          2010   RJ DEPUTADO FEDERAL        PEDRO ALAIM
+    ## 11         100625630213          2010   MG DEPUTADO FEDERAL          ALEXANDRE
+    ## 12         100632050108          2010   SP DEPUTADO FEDERAL      MARA GABRILLI
+    ## 13          10063501910          2010   MS DEPUTADO FEDERAL        PROFÂª IARA
+    ## 14          10080700388          2010   RJ DEPUTADO FEDERAL  VIRGINIA MONTEIRO
+    ## 15           1008162615          2010   RR DEPUTADO FEDERAL     BERINHO BANTIM
+    ## 16           1008171902          2010   MS DEPUTADO FEDERAL           PR DUTRA
+    ## 17          10097381449          2010   ES DEPUTADO FEDERAL      NODIR COLOMBO
+    ## 18         100984500299          2010   MG DEPUTADO FEDERAL PROFESSOR ROMANELY
+    ## 19         101028920302            NA <NA>             <NA>               <NA>
+    ## 20          10106240230          2010   MG DEPUTADO FEDERAL            MARILDA
+    ##    sigla_partido                              ocupacao capital_politico_proprio
+    ## 1           <NA>                                  <NA>                       NA
+    ## 2           <NA>                                  <NA>                       NA
+    ## 3            PPS                                OUTROS                        0
+    ## 4            PMN                     MILITAR REFORMADO                        0
+    ## 5           PMDB                      DEPUTADO FEDERAL                        3
+    ## 6           <NA>                                  <NA>                       NA
+    ## 7           <NA>                                  <NA>                       NA
+    ## 8            PSB                              VEREADOR                        1
+    ## 9            PSC                                OUTROS                        0
+    ## 10           PDT                           EMPRESÃ\201RIO                        0
+    ## 11           PRB                                OUTROS                        0
+    ## 12          PSDB                              VEREADOR                        1
+    ## 13            PT            SERVIDOR PÃšBLICO ESTADUAL                        0
+    ## 14          PMDB                                OUTROS                        0
+    ## 15          PSDB                              ADVOGADO                        0
+    ## 16           PTN            SERVIDOR PÃšBLICO ESTADUAL                        0
+    ## 17       PC do B APOSENTADO (EXCETO SERVIDOR PÃšBLICO)                        0
+    ## 18            PV                                OUTROS                        0
+    ## 19          <NA>                                  <NA>                       NA
+    ## 20            PT            PROFESSOR DE ENSINO MÃ‰DIO                        0
+    ##    n_votos valor_receita_total sit_eleitoral_cod ano_eleicao.y          cargo.y
+    ## 1       NA                  NA                NA          2010 DEPUTADO FEDERAL
+    ## 2       NA                  NA                NA          2010 DEPUTADO FEDERAL
+    ## 3     3378                4703                 0          2010 DEPUTADO FEDERAL
+    ## 4     2652               11750                 0          2010 DEPUTADO FEDERAL
+    ## 5   165630             1911679                 1          2010 DEPUTADO FEDERAL
+    ## 6       NA                  NA                NA          2010 DEPUTADO FEDERAL
+    ## 7       NA                  NA                NA          2010 DEPUTADO FEDERAL
+    ## 8    64984              455017                 0          2010 DEPUTADO FEDERAL
+    ## 9     2785               12016                 0          2010 DEPUTADO FEDERAL
+    ## 10    1225               31832                 0          2010 DEPUTADO FEDERAL
+    ## 11     196               23883                 0          2010 DEPUTADO FEDERAL
+    ## 12  160138             1214034                 1          2010 DEPUTADO FEDERAL
+    ## 13    5449               41418                 0          2010 DEPUTADO FEDERAL
+    ## 14    1047                 300                 0          2010 DEPUTADO FEDERAL
+    ## 15   10111              191430                 1          2010 DEPUTADO FEDERAL
+    ## 16     375               62300                 0          2010 DEPUTADO FEDERAL
+    ## 17    3647               17975                 0          2010 DEPUTADO FEDERAL
+    ## 18    5478               86396                 0          2010 DEPUTADO FEDERAL
+    ## 19      NA                  NA                NA          2010 DEPUTADO FEDERAL
+    ## 20   26784              181858                 0          2010 DEPUTADO FEDERAL
+    ##    uf.y      sexo
+    ## 1    SP MASCULINO
+    ## 2    RJ  FEMININO
+    ## 3    AC MASCULINO
+    ## 4    RJ MASCULINO
+    ## 5    RJ MASCULINO
+    ## 6    PE MASCULINO
+    ## 7    MG  FEMININO
+    ## 8    PA MASCULINO
+    ## 9    SP MASCULINO
+    ## 10   RJ MASCULINO
+    ## 11   MG MASCULINO
+    ## 12   SP  FEMININO
+    ## 13   MS  FEMININO
+    ## 14   RJ  FEMININO
+    ## 15   RR MASCULINO
+    ## 16   MS MASCULINO
+    ## 17   ES MASCULINO
+    ## 18   MG MASCULINO
+    ## 19   RJ  FEMININO
+    ## 20   MG  FEMININO
 
 ``` r
 # Carrega arquivos de votação e receitas de candidatos e candidatas em 2014 e 2018.
@@ -824,28 +731,17 @@ head(dados_rec_vot_2014_2018_orig, 10)
     ## 8           NÃ£o competitivo     115              432,92         70
     ## 9           NÃ£o competitivo     303             3655,95         70
     ## 10          NÃ£o competitivo     905                4288         70
-    ##    situacao_eleitoral      sexo            cargo ano_eleicao uf
-    ## 1            SUPLENTE MASCULINO DEPUTADO FEDERAL        2014 SP
-    ## 2            SUPLENTE MASCULINO DEPUTADO FEDERAL        2014 SP
-    ## 3            SUPLENTE  FEMININO DEPUTADO FEDERAL        2014 SP
-    ## 4            SUPLENTE MASCULINO DEPUTADO FEDERAL        2014 SP
-    ## 5         NÃƒO ELEITO MASCULINO DEPUTADO FEDERAL        2014 SP
-    ## 6            SUPLENTE MASCULINO DEPUTADO FEDERAL        2014 SP
-    ## 7            SUPLENTE MASCULINO DEPUTADO FEDERAL        2014 SP
-    ## 8         NÃƒO ELEITO  FEMININO DEPUTADO FEDERAL        2014 SP
-    ## 9            SUPLENTE  FEMININO DEPUTADO FEDERAL        2014 SP
-    ## 10           SUPLENTE  FEMININO DEPUTADO FEDERAL        2014 SP
-    ##    rank_votacao_uf
-    ## 1              337
-    ## 2              740
-    ## 3             1180
-    ## 4              335
-    ## 5              153
-    ## 6              481
-    ## 7              273
-    ## 8             1160
-    ## 9              986
-    ## 10             672
+    ##    situacao_eleitoral      sexo            cargo ano_eleicao uf rank_votacao_uf
+    ## 1            SUPLENTE MASCULINO DEPUTADO FEDERAL        2014 SP             337
+    ## 2            SUPLENTE MASCULINO DEPUTADO FEDERAL        2014 SP             740
+    ## 3            SUPLENTE  FEMININO DEPUTADO FEDERAL        2014 SP            1180
+    ## 4            SUPLENTE MASCULINO DEPUTADO FEDERAL        2014 SP             335
+    ## 5         NÃƒO ELEITO MASCULINO DEPUTADO FEDERAL        2014 SP             153
+    ## 6            SUPLENTE MASCULINO DEPUTADO FEDERAL        2014 SP             481
+    ## 7            SUPLENTE MASCULINO DEPUTADO FEDERAL        2014 SP             273
+    ## 8         NÃƒO ELEITO  FEMININO DEPUTADO FEDERAL        2014 SP            1160
+    ## 9            SUPLENTE  FEMININO DEPUTADO FEDERAL        2014 SP             986
+    ## 10           SUPLENTE  FEMININO DEPUTADO FEDERAL        2014 SP             672
 
 ``` r
 # Substituindo separador de decimais "," por "."
@@ -921,14 +817,11 @@ head(dados_rec_vot_2014_2018_orig, 10)
 ### d.2. Diferença na proporção de receitas das candidatas a deputado federal, em 2014 e 2018
 
 ``` r
-dados_prop_rec <- 
-  ddply(dados_rec_vot_2014_2018_orig,
-        .(ano_eleicao, uf), 
-        transform, 
-        prop=valor_receita_total/sum(valor_receita_total)) %>%
-  select('ano_eleicao', 'uf', 'sexo', 'prop') %>%
+dados_prop_rec <- dados_rec_vot_2014_2018_orig %>%
+  group_by(ano_eleicao, uf) %>%
+  mutate(prop_rec = valor_receita_total/sum(valor_receita_total)) %>%
+  select('ano_eleicao', 'uf', 'sexo', 'prop_rec') %>%
   filter(sexo == 'f' & (ano_eleicao == '2014' | ano_eleicao == '2018'))
-names(dados_prop_rec)[4] <- "prop_rec"
 
 n_fig <- n_fig + 1
 ggplot(data=dados_prop_rec, aes(x=ano_eleicao, y=prop_rec, fill=factor(ano_eleicao))) +
@@ -944,14 +837,11 @@ ggplot(data=dados_prop_rec, aes(x=ano_eleicao, y=prop_rec, fill=factor(ano_eleic
 ### d.3. Diferença na proporção de receitas das candidatas a deputado federal, em 2014 e 2018 (detalhe por UF)
 
 ``` r
-dados_prop_rec <- 
-  ddply(dados_rec_vot_2014_2018_orig,
-        .(ano_eleicao, uf), 
-        transform, 
-        prop=valor_receita_total/sum(valor_receita_total)) %>%
-  select('ano_eleicao', 'uf', 'sexo', 'prop') %>%
+dados_prop_rec <- dados_rec_vot_2014_2018_orig %>%
+  group_by(ano_eleicao, uf) %>%
+  mutate(prop_rec = valor_receita_total/sum(valor_receita_total)) %>%
+  select('ano_eleicao', 'uf', 'sexo', 'prop_rec') %>%
   filter(sexo == 'f' & (ano_eleicao == '2014' | ano_eleicao == '2018'))
-names(dados_prop_rec)[4] <- "prop_rec"
 
 n_fig <- n_fig + 1
 
@@ -993,14 +883,11 @@ ggplot(lista_receitas_2018, aes(fill=variable, y=receita, x=uf)) +
 ### d.5. Diferença na proporção de votos nas candidatas a deputado federal, em 2014 e 2018
 
 ``` r
-dados_prop_vot <- 
-  ddply(dados_rec_vot_2014_2018_orig,
-        .(ano_eleicao, uf), 
-        transform, 
-        prop=n_votos/sum(n_votos)) %>%
-  select('ano_eleicao', 'uf', 'sexo', 'prop') %>%
+dados_prop_vot <- dados_rec_vot_2014_2018_orig %>%
+  group_by(ano_eleicao, uf) %>%
+  mutate(prop_votos = n_votos/sum(n_votos)) %>%
+  select('ano_eleicao', 'uf', 'sexo', 'prop_votos') %>%
   filter(sexo == 'f' & (ano_eleicao == '2014' | ano_eleicao == '2018'))
-names(dados_prop_vot)[4] <- "prop_votos"
 
 n_fig <- n_fig + 1
 
@@ -1017,15 +904,6 @@ ggplot(data=dados_prop_vot, aes(x=ano_eleicao, y=prop_votos, fill=factor(ano_ele
 ### d.6. Diferença na proporção de votos nas candidatas a deputado federal, em 2014 e 2018 (detalhe por UF)
 
 ``` r
-dados_prop_vot <- 
-  ddply(dados_rec_vot_2014_2018_orig,
-        .(ano_eleicao, uf), 
-        transform, 
-        prop=n_votos/sum(n_votos)) %>%
-  select('ano_eleicao', 'uf', 'sexo', 'prop') %>%
-  filter(sexo == 'f' & (ano_eleicao == '2014' | ano_eleicao == '2018'))
-names(dados_prop_vot)[4] <- "prop_votos"
-
 n_fig <- n_fig + 1
 
 ggplot(data=dados_prop_vot, aes(x=sexo, y=prop_votos, fill=factor(ano_eleicao))) +
@@ -1073,26 +951,12 @@ head(dados_rec, 10)
     ## 10        2014 SP    f             4288.00
 
 ``` r
-dados_rec_f <- 
-  ddply(dados_rec,.(ano_eleicao, uf), transform, prop=valor_receita_total/sum(valor_receita_total)) %>%
-  filter(sexo=='f') %>% 
+dados_rec_f <- dados_rec %>%
+  group_by(ano_eleicao, uf) %>%
+  mutate(prop = valor_receita_total/sum(valor_receita_total)) %>%
+  filter(sexo == 'f' & (ano_eleicao == '2014' | ano_eleicao == '2018')) %>%
   select('ano_eleicao', 'uf', 'prop')
-head(dados_rec_f, 10)
-```
-
-    ##    ano_eleicao uf         prop
-    ## 1         2014 AC 0.0093076380
-    ## 2         2014 AC 0.0006418405
-    ## 3         2014 AC 0.0001877978
-    ## 4         2014 AC 0.0012813038
-    ## 5         2014 AC 0.0382013952
-    ## 6         2014 AC 0.0650168205
-    ## 7         2014 AC 0.0352239684
-    ## 8         2014 AC 0.0022941994
-    ## 9         2014 AC 0.0078558103
-    ## 10        2014 AC 0.0003802311
-
-``` r
+  
 shapiro.test(dados_rec_f$prop)
 ```
 
@@ -1124,29 +988,12 @@ head(dados_vot, 10)
     ## 10        2014 SP    f     905
 
 ``` r
-dados_vot_f <- 
-  ddply(dados_vot,
-        .(ano_eleicao, uf), 
-        transform, 
-        prop=n_votos/sum(n_votos)) %>%
-  filter(sexo=='f') %>% 
+dados_vot_f <- dados_vot %>%
+  group_by(ano_eleicao, uf) %>%
+  mutate(prop = n_votos/sum(n_votos)) %>%
+  filter(sexo == 'f' & (ano_eleicao == '2014' | ano_eleicao == '2018')) %>%
   select('ano_eleicao', 'uf', 'prop')
-head(dados_vot_f, 10)
-```
 
-    ##    ano_eleicao uf         prop
-    ## 1         2014 AC 0.0078069456
-    ## 2         2014 AC 0.0006673767
-    ## 3         2014 AC 0.0000408598
-    ## 4         2014 AC 0.0032660599
-    ## 5         2014 AC 0.0554031636
-    ## 6         2014 AC 0.0471249683
-    ## 7         2014 AC 0.0370734577
-    ## 8         2014 AC 0.0018196231
-    ## 9         2014 AC 0.0052109864
-    ## 10        2014 AC 0.0006183450
-
-``` r
 shapiro.test(dados_vot_f$prop)
 ```
 
