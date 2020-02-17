@@ -1,7 +1,7 @@
 ---
 title: "Por que houve mais deputadas federais em 2018?"
 author: "Marcus Vinicius Chevitarese Alves, Ângela Batista Oliveira"
-date: "25/11/2019"
+date: "17/02/2020"
 output: github_document
 ---
 
@@ -251,7 +251,7 @@ arq_candidatos_2010 <- merge(x=dados_candidatos_2010_orig,
                             by="num_titulo_eleitoral",
                             all=TRUE)
 
-arq_candidatos_2010
+head(arq_candidatos_2010, 20)
 
 ```
 
