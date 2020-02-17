@@ -12,10 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Carrega as bibliotecas necessárias
 
 ```{r, message=FALSE, warning=FALSE}
-library(plyr)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
+library(tidyverse)
 library(gridExtra)
 library(ggpol)
 library(data.table)
@@ -55,19 +52,22 @@ summary(data_freq_2018_origem)
 ### a.3. Total e proporção de eleitos por UF em 2014
 
 ```{r}
-data_freq_2014 <- ddply(data_freq_2014_origem,
-                        .(uf), 
-                        transform, 
-                        prop=n_eleitos/sum(n_eleitos))
-names(data_freq_2014)[4] <- "prop_eleitos"
+data_freq_2014 <- data_freq_2014_origem %>%
+  group_by(uf) %>%
+  mutate(prop_eleitos = n_eleitos / sum(n_eleitos)) %>%
+  ungroup()
+
 data_freq_2014
 ```
 
 ### a.4. Total e proporção de eleitos por UF em 2018
 
 ```{r}
-data_freq_2018 <- ddply(data_freq_2018_origem,.(uf), transform, prop=n_eleitos/sum(n_eleitos))
-names(data_freq_2018)[4] <- "prop_eleitos"
+data_freq_2018 <- data_freq_2018_origem %>%
+  group_by(uf) %>%
+  mutate(prop_eleitos = n_eleitos / sum(n_eleitos)) %>%
+  ungroup()
+
 data_freq_2018
 ```
 
@@ -291,14 +291,11 @@ head(dados_rec_vot_2014_2018_orig, 10)
 ### d.2. Diferença na proporção de receitas das candidatas a deputado federal, em 2014 e 2018
 
 ```{r}
-dados_prop_rec <- 
-  ddply(dados_rec_vot_2014_2018_orig,
-        .(ano_eleicao, uf), 
-        transform, 
-        prop=valor_receita_total/sum(valor_receita_total)) %>%
-  select('ano_eleicao', 'uf', 'sexo', 'prop') %>%
+dados_prop_rec <- dados_rec_vot_2014_2018_orig %>%
+  group_by(ano_eleicao, uf) %>%
+  mutate(prop_rec = valor_receita_total/sum(valor_receita_total)) %>%
+  select('ano_eleicao', 'uf', 'sexo', 'prop_rec') %>%
   filter(sexo == 'f' & (ano_eleicao == '2014' | ano_eleicao == '2018'))
-names(dados_prop_rec)[4] <- "prop_rec"
 
 n_fig <- n_fig + 1
 ggplot(data=dados_prop_rec, aes(x=ano_eleicao, y=prop_rec, fill=factor(ano_eleicao))) +
@@ -312,14 +309,11 @@ ggplot(data=dados_prop_rec, aes(x=ano_eleicao, y=prop_rec, fill=factor(ano_eleic
 ### d.3. Diferença na proporção de receitas das candidatas a deputado federal, em 2014 e 2018 (detalhe por UF)
 
 ```{r }
-dados_prop_rec <- 
-  ddply(dados_rec_vot_2014_2018_orig,
-        .(ano_eleicao, uf), 
-        transform, 
-        prop=valor_receita_total/sum(valor_receita_total)) %>%
-  select('ano_eleicao', 'uf', 'sexo', 'prop') %>%
+dados_prop_rec <- dados_rec_vot_2014_2018_orig %>%
+  group_by(ano_eleicao, uf) %>%
+  mutate(prop_rec = valor_receita_total/sum(valor_receita_total)) %>%
+  select('ano_eleicao', 'uf', 'sexo', 'prop_rec') %>%
   filter(sexo == 'f' & (ano_eleicao == '2014' | ano_eleicao == '2018'))
-names(dados_prop_rec)[4] <- "prop_rec"
 
 n_fig <- n_fig + 1
 
@@ -359,14 +353,11 @@ ggplot(lista_receitas_2018, aes(fill=variable, y=receita, x=uf)) +
 ### d.5. Diferença na proporção de votos nas candidatas a deputado federal, em 2014 e 2018
 
 ```{r}
-dados_prop_vot <- 
-  ddply(dados_rec_vot_2014_2018_orig,
-        .(ano_eleicao, uf), 
-        transform, 
-        prop=n_votos/sum(n_votos)) %>%
-  select('ano_eleicao', 'uf', 'sexo', 'prop') %>%
+dados_prop_vot <- dados_rec_vot_2014_2018_orig %>%
+  group_by(ano_eleicao, uf) %>%
+  mutate(prop_votos = n_votos/sum(n_votos)) %>%
+  select('ano_eleicao', 'uf', 'sexo', 'prop_votos') %>%
   filter(sexo == 'f' & (ano_eleicao == '2014' | ano_eleicao == '2018'))
-names(dados_prop_vot)[4] <- "prop_votos"
 
 n_fig <- n_fig + 1
 
@@ -381,15 +372,6 @@ ggplot(data=dados_prop_vot, aes(x=ano_eleicao, y=prop_votos, fill=factor(ano_ele
 ### d.6. Diferença na proporção de votos nas candidatas a deputado federal, em 2014 e 2018 (detalhe por UF) 
 
 ```{r}
-dados_prop_vot <- 
-  ddply(dados_rec_vot_2014_2018_orig,
-        .(ano_eleicao, uf), 
-        transform, 
-        prop=n_votos/sum(n_votos)) %>%
-  select('ano_eleicao', 'uf', 'sexo', 'prop') %>%
-  filter(sexo == 'f' & (ano_eleicao == '2014' | ano_eleicao == '2018'))
-names(dados_prop_vot)[4] <- "prop_votos"
-
 n_fig <- n_fig + 1
 
 ggplot(data=dados_prop_vot, aes(x=sexo, y=prop_votos, fill=factor(ano_eleicao))) +
@@ -418,12 +400,12 @@ dados_rec <-
   select('ano_eleicao', 'uf', 'sexo', 'valor_receita_total')
 head(dados_rec, 10)
 
-dados_rec_f <- 
-  ddply(dados_rec,.(ano_eleicao, uf), transform, prop=valor_receita_total/sum(valor_receita_total)) %>%
-  filter(sexo=='f') %>% 
+dados_rec_f <- dados_rec %>%
+  group_by(ano_eleicao, uf) %>%
+  mutate(prop = valor_receita_total/sum(valor_receita_total)) %>%
+  filter(sexo == 'f' & (ano_eleicao == '2014' | ano_eleicao == '2018')) %>%
   select('ano_eleicao', 'uf', 'prop')
-head(dados_rec_f, 10)
-
+  
 shapiro.test(dados_rec_f$prop)
 ```
 
@@ -435,14 +417,11 @@ dados_vot <-
   select('ano_eleicao', 'uf', 'sexo', 'n_votos')
 head(dados_vot, 10)
 
-dados_vot_f <- 
-  ddply(dados_vot,
-        .(ano_eleicao, uf), 
-        transform, 
-        prop=n_votos/sum(n_votos)) %>%
-  filter(sexo=='f') %>% 
+dados_vot_f <- dados_vot %>%
+  group_by(ano_eleicao, uf) %>%
+  mutate(prop = n_votos/sum(n_votos)) %>%
+  filter(sexo == 'f' & (ano_eleicao == '2014' | ano_eleicao == '2018')) %>%
   select('ano_eleicao', 'uf', 'prop')
-head(dados_vot_f, 10)
 
 shapiro.test(dados_vot_f$prop)
 ```
