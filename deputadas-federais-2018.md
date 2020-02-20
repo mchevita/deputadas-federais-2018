@@ -1,7 +1,7 @@
 Por que houve mais deputadas federais em 2018?
 ================
 Marcus Vinicius Chevitarese Alves, Ângela Batista Oliveira
-17/02/2020
+19/02/2020
 
 ## Carrega as bibliotecas necessárias
 
@@ -278,24 +278,6 @@ tab_prop_eleitos_uf_sexo_2014
     ##   SP 0.08571429 0.91428571 1.00000000
     ##   TO 0.37500000 0.62500000 1.00000000
 
-``` r
-# cross_tab <- reshape2::dcast(data_freq_2014, uf ~ sexo, value.var = "n_eleitos", 
-#                                             margins=c("uf", "sexo"), fun.aggregate = sum)
-# 
-# 
-# titulos = c("Proporção de eleitos em 2014", "Cruzamento por UF e sexo do candidato")
-# tab_eleitos_uf_sexo_2014 <- xltabr::auto_crosstab_to_wb(cross_tab, titles = titulos)
-# openxlsx::openXL(tab_eleitos_uf_sexo_2014)
-# 
-# cross_tab <- reshape2::dcast(data_freq_2018, uf ~ sexo, value.var = "n_eleitos", 
-#                                             margins=c("uf", "sexo"), fun.aggregate = sum)
-# 
-# 
-# titulos = c("Proporção de eleitos em 2018", "Cruzamento por UF e sexo do candidato")
-# tab_eleitos_uf_sexo_2018 <- xltabr::auto_crosstab_to_wb(cross_tab, titles = titulos)
-# openxlsx::openXL(tab_eleitos_uf_sexo_2018)
-```
-
 ### a.9. Quantitativo e proporção de eleitos para deputado federal por sexo, em 2018
 
 ``` r
@@ -423,7 +405,7 @@ plot2018 <- ggplot(cd2018) +
 grid.arrange(plot2014, plot2018, ncol=2)
 ```
 
-![](deputadas-federais-2018_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](deputadas-federais-2018_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ### a.11. Compara a proporção de eleitas em cada UF em 2014 e 2018
 
@@ -705,8 +687,8 @@ head(arq_candidatos_2010, 20)
 # Carrega arquivos de votação e receitas de candidatos e candidatas em 2014 e 2018.
 arq_rec_vot_2014_2018 <- "dados/receitas_e_votacao_2014_e_2018.csv"
 
-dados_rec_vot_2014_2018_orig <- read.csv(arq_rec_vot_2014_2018, sep=";")
-head(dados_rec_vot_2014_2018_orig, 10)
+dados_rec_vot_2014_2018 <- read.csv(arq_rec_vot_2014_2018, sep=";", encoding = "UTF-8")
+head(dados_rec_vot_2014_2018, 10)
 ```
 
     ##    igpm_2014_2018 valor_receita_publica rank_receita_uf
@@ -721,52 +703,52 @@ head(dados_rec_vot_2014_2018_orig, 10)
     ## 9       1,3121289                                   791
     ## 10      1,3121289                                   754
     ##    indicador_competitividade n_votos valor_receita_total n_vagas_uf
-    ## 1           NÃ£o competitivo    4222            19844,46         70
-    ## 2           NÃ£o competitivo     716                3500         70
-    ## 3           NÃ£o competitivo      86                 1,7         70
-    ## 4           NÃ£o competitivo    4232                2300         70
-    ## 5           NÃ£o competitivo   24812            42992,56         70
-    ## 6           NÃ£o competitivo    2002            53994,12         70
-    ## 7           NÃ£o competitivo    6574            34918,76         70
-    ## 8           NÃ£o competitivo     115              432,92         70
-    ## 9           NÃ£o competitivo     303             3655,95         70
-    ## 10          NÃ£o competitivo     905                4288         70
+    ## 1            Não competitivo    4222            19844,46         70
+    ## 2            Não competitivo     716                3500         70
+    ## 3            Não competitivo      86                 1,7         70
+    ## 4            Não competitivo    4232                2300         70
+    ## 5            Não competitivo   24812            42992,56         70
+    ## 6            Não competitivo    2002            53994,12         70
+    ## 7            Não competitivo    6574            34918,76         70
+    ## 8            Não competitivo     115              432,92         70
+    ## 9            Não competitivo     303             3655,95         70
+    ## 10           Não competitivo     905                4288         70
     ##    situacao_eleitoral      sexo            cargo ano_eleicao uf rank_votacao_uf
     ## 1            SUPLENTE MASCULINO DEPUTADO FEDERAL        2014 SP             337
     ## 2            SUPLENTE MASCULINO DEPUTADO FEDERAL        2014 SP             740
     ## 3            SUPLENTE  FEMININO DEPUTADO FEDERAL        2014 SP            1180
     ## 4            SUPLENTE MASCULINO DEPUTADO FEDERAL        2014 SP             335
-    ## 5         NÃƒO ELEITO MASCULINO DEPUTADO FEDERAL        2014 SP             153
+    ## 5          NÃO ELEITO MASCULINO DEPUTADO FEDERAL        2014 SP             153
     ## 6            SUPLENTE MASCULINO DEPUTADO FEDERAL        2014 SP             481
     ## 7            SUPLENTE MASCULINO DEPUTADO FEDERAL        2014 SP             273
-    ## 8         NÃƒO ELEITO  FEMININO DEPUTADO FEDERAL        2014 SP            1160
+    ## 8          NÃO ELEITO  FEMININO DEPUTADO FEDERAL        2014 SP            1160
     ## 9            SUPLENTE  FEMININO DEPUTADO FEDERAL        2014 SP             986
     ## 10           SUPLENTE  FEMININO DEPUTADO FEDERAL        2014 SP             672
 
 ``` r
 # Substituindo separador de decimais "," por "."
-dados_rec_vot_2014_2018_orig$valor_receita_publica <- gsub(',', '.', dados_rec_vot_2014_2018_orig$valor_receita_publica)
-dados_rec_vot_2014_2018_orig$valor_receita_publica <- as.numeric(dados_rec_vot_2014_2018_orig$valor_receita_publica)
+dados_rec_vot_2014_2018$valor_receita_publica <- gsub(',', '.', dados_rec_vot_2014_2018$valor_receita_publica)
+dados_rec_vot_2014_2018$valor_receita_publica <- as.numeric(dados_rec_vot_2014_2018$valor_receita_publica)
 
-dados_rec_vot_2014_2018_orig$valor_receita_total <- gsub(',', '.', dados_rec_vot_2014_2018_orig$valor_receita_total)
-dados_rec_vot_2014_2018_orig$valor_receita_total <- as.numeric(dados_rec_vot_2014_2018_orig$valor_receita_total)
+dados_rec_vot_2014_2018$valor_receita_total <- gsub(',', '.', dados_rec_vot_2014_2018$valor_receita_total)
+dados_rec_vot_2014_2018$valor_receita_total <- as.numeric(dados_rec_vot_2014_2018$valor_receita_total)
 
-dados_rec_vot_2014_2018_orig$igpm_2014_2018 <- gsub(',', '.', dados_rec_vot_2014_2018_orig$igpm_2014_2018)
-dados_rec_vot_2014_2018_orig$igpm_2014_2018 <- as.numeric(dados_rec_vot_2014_2018_orig$igpm_2014_2018)
+dados_rec_vot_2014_2018$igpm_2014_2018 <- gsub(',', '.', dados_rec_vot_2014_2018$igpm_2014_2018)
+dados_rec_vot_2014_2018$igpm_2014_2018 <- as.numeric(dados_rec_vot_2014_2018$igpm_2014_2018)
 
 # Substituindo "NA" por 0
-dados_rec_vot_2014_2018_orig <- dados_rec_vot_2014_2018_orig %>%
+dados_rec_vot_2014_2018 <- dados_rec_vot_2014_2018 %>%
   mutate(valor_receita_publica = coalesce(valor_receita_publica, 0))
 
 # Substituindo "FEMININO" e "MASCULINO" por "m" e "f"
-dados_rec_vot_2014_2018_orig <- dados_rec_vot_2014_2018_orig %>%
+dados_rec_vot_2014_2018 <- dados_rec_vot_2014_2018 %>%
   mutate(sexo = ifelse(sexo == "FEMININO", "f", "m"))
 
 # Criando nova coluna, para identificar diretamente se o candidato foi eleito
-dados_rec_vot_2014_2018_orig <- dados_rec_vot_2014_2018_orig %>%
+dados_rec_vot_2014_2018 <- dados_rec_vot_2014_2018 %>%
   mutate(eleito = ifelse(situacao_eleitoral=="ELEITO POR MÉDIA" | situacao_eleitoral=="ELEITO POR QP", 1, 0))
 
-head(dados_rec_vot_2014_2018_orig, 10)
+head(dados_rec_vot_2014_2018, 10)
 ```
 
     ##    igpm_2014_2018 valor_receita_publica rank_receita_uf
@@ -781,25 +763,25 @@ head(dados_rec_vot_2014_2018_orig, 10)
     ## 9        1.312129                     0             791
     ## 10       1.312129                     0             754
     ##    indicador_competitividade n_votos valor_receita_total n_vagas_uf
-    ## 1           NÃ£o competitivo    4222            19844.46         70
-    ## 2           NÃ£o competitivo     716             3500.00         70
-    ## 3           NÃ£o competitivo      86                1.70         70
-    ## 4           NÃ£o competitivo    4232             2300.00         70
-    ## 5           NÃ£o competitivo   24812            42992.56         70
-    ## 6           NÃ£o competitivo    2002            53994.12         70
-    ## 7           NÃ£o competitivo    6574            34918.76         70
-    ## 8           NÃ£o competitivo     115              432.92         70
-    ## 9           NÃ£o competitivo     303             3655.95         70
-    ## 10          NÃ£o competitivo     905             4288.00         70
+    ## 1            Não competitivo    4222            19844.46         70
+    ## 2            Não competitivo     716             3500.00         70
+    ## 3            Não competitivo      86                1.70         70
+    ## 4            Não competitivo    4232             2300.00         70
+    ## 5            Não competitivo   24812            42992.56         70
+    ## 6            Não competitivo    2002            53994.12         70
+    ## 7            Não competitivo    6574            34918.76         70
+    ## 8            Não competitivo     115              432.92         70
+    ## 9            Não competitivo     303             3655.95         70
+    ## 10           Não competitivo     905             4288.00         70
     ##    situacao_eleitoral sexo            cargo ano_eleicao uf rank_votacao_uf
     ## 1            SUPLENTE    m DEPUTADO FEDERAL        2014 SP             337
     ## 2            SUPLENTE    m DEPUTADO FEDERAL        2014 SP             740
     ## 3            SUPLENTE    f DEPUTADO FEDERAL        2014 SP            1180
     ## 4            SUPLENTE    m DEPUTADO FEDERAL        2014 SP             335
-    ## 5         NÃƒO ELEITO    m DEPUTADO FEDERAL        2014 SP             153
+    ## 5          NÃO ELEITO    m DEPUTADO FEDERAL        2014 SP             153
     ## 6            SUPLENTE    m DEPUTADO FEDERAL        2014 SP             481
     ## 7            SUPLENTE    m DEPUTADO FEDERAL        2014 SP             273
-    ## 8         NÃƒO ELEITO    f DEPUTADO FEDERAL        2014 SP            1160
+    ## 8          NÃO ELEITO    f DEPUTADO FEDERAL        2014 SP            1160
     ## 9            SUPLENTE    f DEPUTADO FEDERAL        2014 SP             986
     ## 10           SUPLENTE    f DEPUTADO FEDERAL        2014 SP             672
     ##    eleito
@@ -814,10 +796,39 @@ head(dados_rec_vot_2014_2018_orig, 10)
     ## 9       0
     ## 10      0
 
+### teste de agrupamento de eleitos e não-eleitos
+
+``` r
+eleitos_2014 <- dados_rec_vot_2014_2018 %>%
+  filter((ano_eleicao == '2014') & (eleito == 1)) %>%
+  group_by(uf, rank_votacao_uf, sexo) %>%
+  mutate(n_eleitos = sum(eleito)) %>%
+  select('uf', 'rank_votacao_uf', 'sexo', 'n_eleitos') %>%
+  arrange(uf, rank_votacao_uf, .by_group = TRUE)
+
+eleitos_2014
+```
+
+    ## # A tibble: 513 x 4
+    ## # Groups:   uf, rank_votacao_uf, sexo [513]
+    ##    uf    rank_votacao_uf sexo  n_eleitos
+    ##    <fct>           <int> <chr>     <dbl>
+    ##  1 AC                  1 m             1
+    ##  2 AC                  2 m             1
+    ##  3 AC                  3 m             1
+    ##  4 AC                  4 m             1
+    ##  5 AC                  5 f             1
+    ##  6 AC                  6 m             1
+    ##  7 AC                  7 m             1
+    ##  8 AC                  8 m             1
+    ##  9 AL                  1 m             1
+    ## 10 AL                  2 m             1
+    ## # ... with 503 more rows
+
 ### d.2. Diferença na proporção de receitas das candidatas a deputado federal, em 2014 e 2018
 
 ``` r
-dados_prop_rec <- dados_rec_vot_2014_2018_orig %>%
+dados_prop_rec <- dados_rec_vot_2014_2018 %>%
   group_by(ano_eleicao, uf) %>%
   mutate(prop_rec = valor_receita_total/sum(valor_receita_total)) %>%
   select('ano_eleicao', 'uf', 'sexo', 'prop_rec') %>%
@@ -837,7 +848,7 @@ ggplot(data=dados_prop_rec, aes(x=ano_eleicao, y=prop_rec, fill=factor(ano_eleic
 ### d.3. Diferença na proporção de receitas das candidatas a deputado federal, em 2014 e 2018 (detalhe por UF)
 
 ``` r
-dados_prop_rec <- dados_rec_vot_2014_2018_orig %>%
+dados_prop_rec <- dados_rec_vot_2014_2018 %>%
   group_by(ano_eleicao, uf) %>%
   mutate(prop_rec = valor_receita_total/sum(valor_receita_total)) %>%
   select('ano_eleicao', 'uf', 'sexo', 'prop_rec') %>%
@@ -860,7 +871,7 @@ ggplot(data=dados_prop_rec, aes(x=sexo, y=prop_rec, fill=factor(ano_eleicao))) +
 ### d.4. Dependência de recursos públicos
 
 ``` r
-dados_rec_pub_2018 <- dados_rec_vot_2014_2018_orig %>% 
+dados_rec_pub_2018 <- dados_rec_vot_2014_2018 %>% 
   filter(ano_eleicao == '2018') %>%
   select('uf', 'sexo', 'valor_receita_publica', 'valor_receita_total')
 
@@ -883,7 +894,7 @@ ggplot(lista_receitas_2018, aes(fill=variable, y=receita, x=uf)) +
 ### d.5. Diferença na proporção de votos nas candidatas a deputado federal, em 2014 e 2018
 
 ``` r
-dados_prop_vot <- dados_rec_vot_2014_2018_orig %>%
+dados_prop_vot <- dados_rec_vot_2014_2018 %>%
   group_by(ano_eleicao, uf) %>%
   mutate(prop_votos = n_votos/sum(n_votos)) %>%
   select('ano_eleicao', 'uf', 'sexo', 'prop_votos') %>%
@@ -933,7 +944,7 @@ Tais dados, portanto, corroboram as hipóteses aventadas.
 
 ``` r
 dados_rec <-
-  dados_rec_vot_2014_2018_orig %>% 
+  dados_rec_vot_2014_2018 %>% 
   select('ano_eleicao', 'uf', 'sexo', 'valor_receita_total')
 head(dados_rec, 10)
 ```
@@ -970,7 +981,7 @@ shapiro.test(dados_rec_f$prop)
 
 ``` r
 dados_vot <-
-  dados_rec_vot_2014_2018_orig %>% 
+  dados_rec_vot_2014_2018 %>% 
   select('ano_eleicao', 'uf', 'sexo', 'n_votos')
 head(dados_vot, 10)
 ```
